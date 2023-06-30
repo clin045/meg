@@ -25,3 +25,13 @@ rule extract_syllables:
             label = lib.format_label(r[0], r[1], idx)
             with open(output[0], "a+") as f:
                 f.write(f"{label}\n")
+
+rule preprocess:
+    input:
+        "data/raw/{sub}_R-vannest-SRT_{date}_{ses}.ds",
+        "data/manual_labels/{sub}_R-vannest-SRT_{date}_{ses}.txt"
+    output:
+        "{sub}_R-vannest-SRT_{date}_{ses}.test"
+    run:
+        trl = lib.create_trl(input[1])
+        eng.preprocess(input[0],trl,nargout=0)
