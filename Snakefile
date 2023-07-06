@@ -3,7 +3,7 @@ import lib
 
 eng = engine.connect_matlab()
 eng.addpath('./matlab_functions')
-eng.addpath('/Users/clin/research/fieldtrip')
+eng.addpath('~/fieldtrip')
 
 rule extract_audio:
     input:
@@ -31,7 +31,7 @@ rule preprocess:
         "data/raw/{sub}_R-vannest-SRT_{date}_{ses}.ds",
         "data/manual_labels/{sub}_R-vannest-SRT_{date}_{ses}.txt"
     output:
-        "{sub}_R-vannest-SRT_{date}_{ses}.test"
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed.mat"
     run:
         trl = lib.create_trl(input[1])
-        eng.preprocess(input[0],trl,nargout=0)
+        eng.preprocess(input[0],output[0],trl,nargout=0)
