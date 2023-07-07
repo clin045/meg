@@ -26,12 +26,43 @@ rule extract_syllables:
             with open(output[0], "a+") as f:
                 f.write(f"{label}\n")
 
-rule preprocess:
+rule preprocess_a:
+    # Pre-ICA preprocessing steps (bandpass)
     input:
         "data/raw/{sub}_R-vannest-SRT_{date}_{ses}.ds",
         "data/manual_labels/{sub}_R-vannest-SRT_{date}_{ses}.txt"
     output:
-        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed.mat"
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/ica_cleaned.mat"
     run:
         trl = lib.create_trl(input[1])
-        eng.preprocess(input[0],output[0],trl,nargout=0)
+        eng.preprocess_a(input[0],output[0],nargout=0)
+
+# rule preprocess_trials:
+    
+
+rule ica:
+    input:
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed_a.mat"
+    output:
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/ica.mat"
+    run:
+        eng.ica(input[0],output[0],nargout=0)
+
+rule preprocess_b:
+    # ICA component removal, epoching
+    # ica_rejected_components.txt must be created manually
+    input:
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed_a.mat",
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/ica.mat",
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/ica_rejected_components.txt",
+        "data/manual_labels/{sub}_R-vannest-SRT_{date}_{ses}.txt"
+    output:
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed_b.mat"
+    run:
+        reject = []
+        with open(input[2]) as f:
+            for l in f.readlines():
+                reject.append(int(l.strip()))
+        print(f"Rejecting components {reject}")
+        trl = lib.create_trl(input[3])
+        eng.preprocess_b(input[0],input[1],output[0],trl,reject,nargout=0)

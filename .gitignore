@@ -3,3 +3,4 @@ data/
 .snakemake/
 __pycache__/
 __pycache__/*
+__pycache__/lib.cpython-310.pyc
