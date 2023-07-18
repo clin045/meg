@@ -15,7 +15,7 @@ def create_trl(label_file):
     sample_rate = 2400
     labels = np.genfromtxt(label_file, delimiter='\t')
     pre_offset_ms = 400
-    post_offset_ms = 100
+    post_offset_ms = -10
     trl = np.zeros((labels.shape[0], 3),dtype=int)
     for i in range(labels.shape[0]):
         start_sec = labels[i,0]

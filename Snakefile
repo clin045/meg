@@ -32,10 +32,10 @@ rule preprocess_a:
         "data/raw/{sub}_R-vannest-SRT_{date}_{ses}.ds",
         "data/manual_labels/{sub}_R-vannest-SRT_{date}_{ses}.txt"
     output:
-        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/ica_cleaned.mat"
+        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed_a.mat"
     run:
         trl = lib.create_trl(input[1])
-        eng.preprocess_a(input[0],output[0],nargout=0)
+        eng.preprocess_a(input[0],output[0],trl,nargout=0)
 
 # rule preprocess_trials:
     
@@ -57,7 +57,6 @@ rule preprocess_b:
         "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/ica_rejected_components.txt",
         "data/manual_labels/{sub}_R-vannest-SRT_{date}_{ses}.txt"
     output:
-        "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/preprocessed_b.mat",
         "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/timelock.mat"
     run:
         reject = []
@@ -66,7 +65,7 @@ rule preprocess_b:
                 reject.append(int(l.strip()))
         print(f"Rejecting components {reject}")
         trl = lib.create_trl(input[3])
-        eng.preprocess_b(input[0],input[1],output[0],output[1],trl,reject,nargout=0)
+        eng.preprocess_b(input[0],input[1],output[0],trl,reject,nargout=0)
 
 rule beamformer:
     input:
@@ -75,6 +74,11 @@ rule beamformer:
         "data/preprocessing/{sub}_R-vannest-SRT_{date}_{ses}/timelock.mat",
         "CTL_05_05M/T1_3/T1_anon.nii.gz",
     output:
-        "data/source_recon/{sub}_R-vannest-SRT_{date}_{ses}/sourceInt.mat"
+        "data/source_recon/{sub}_R-vannest-SRT_{date}_{ses}/sourceInt.mat",
+        "data/source_recon/{sub}_R-vannest-SRT_{date}_{ses}/recon.png",
+        "data/source_recon/{sub}_R-vannest-SRT_{date}_{ses}/recon.nii",
+        "data/source_recon/{sub}_R-vannest-SRT_{date}_{ses}/anat_resliced.nii.gz"
     run:
-        eng.beamformer(input[0],input[1],input[2], input[3], output[0],nargout=0)
+        eng.beamformer(input[0],input[1],input[2], input[3], 
+            output[0], output[1], output[2].split(".nii")[0],
+            output[3].split(".nii.gz")[0],nargout=0)

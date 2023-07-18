@@ -6,7 +6,6 @@ function preprocess_a(in_path, out_path, trl)
     cfg.bpfilter = 'yes';
     cfg.bpfreq = [1, 100];
     cfg.continuous  = 'yes';
-    cfg.trl = trl;
 
     preprocessed = ft_preprocessing(cfg);
     save(out_path,"preprocessed",'-v7.3');
